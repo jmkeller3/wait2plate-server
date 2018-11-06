@@ -1,12 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
-const auth = require("../../auth");
+const auth = require("../auth");
 const JWT = require("jsonwebtoken");
-const config = require("../../config");
+const config = require("../config");
 
 // User Model
-const User = require("../../models/User");
+const User = require("../models/User");
 
 // GET api/users
 // ~Get all users~

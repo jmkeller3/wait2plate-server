@@ -1,8 +1,7 @@
 const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
 
 // Create Schema
-const ReportSchema = new Schema({
+const ReportSchema = new mongoose.Schema({
   restaurant_id: {
     type: String,
     required: true
@@ -17,4 +16,5 @@ const ReportSchema = new Schema({
   }
 });
 
-module.exports = Report = mongoose.model("report", ReportSchema);
+const Report = mongoose.model("Report", ReportSchema);
+module.exports = Report;

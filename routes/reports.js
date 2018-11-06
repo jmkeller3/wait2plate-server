@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 // Report Model
-const Report = require("../../models/Report");
+const Report = require("../models/Report");
 
 // GET api/reports
 // ~Get all reports~

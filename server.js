@@ -1,10 +1,10 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const config = require("./config");
+const { MONGODB_URI, PORT } = require("./config");
 const bodyParser = require("body-parser");
 
-const users = require("./routes/api/users");
-const reports = require("./routes/api/reports");
+const users = require("./routes/users");
+const reports = require("./routes/reports");
 
 const app = express();
 
@@ -16,16 +16,47 @@ app.use(bodyParser.json());
 app.use("/api/users", users);
 app.use("/api/reports", reports);
 
-app.listen(config.PORT, () => {
-  mongoose.set("useFindAndModify", false);
-  mongoose.connect(
-    config.MONGODB_URI,
-    { useNewUrlParser: true }
-  );
-  console.log(`Server started on port ${config.PORT}`);
-});
+let server;
 
-// DB Config
-const db = mongoose.connection;
+function runServer(databaseUri, port = PORT) {
+  return new Promise((resolve, reject) => {
+    mongoose.connect(
+      databaseUri,
+      { useNewUrlParser: true },
+      error => {
+        if (error) {
+          return reject(error);
+        }
+        server = app
+          .listen(port, () => {
+            console.log(`Listening on port ${port}`);
+            resolve();
+          })
+          .on("error", error => {
+            mongoose.disconnect();
+            reject(error);
+          });
+      }
+    );
+  });
+}
 
-db.on("error", error => console.log(error));
+function closeServer() {
+  return mongoose.disconnect().then(() => {
+    return new Promise((resolve, reject) => {
+      console.log("Closing ...");
+      server.close(error => {
+        if (error) {
+          return reject(error);
+        }
+        resolve();
+      });
+    });
+  });
+}
+
+if (require.main === module) {
+  runServer(MONGODB_URI).catch(error => console.error(error));
+}
+
+module.exports = { app, runServer, closeServer };
