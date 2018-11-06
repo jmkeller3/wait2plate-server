@@ -1,12 +1,12 @@
 const express = require("express");
-const router = express.Router();
 const bcrypt = require("bcryptjs");
-const auth = require("../../auth");
 const JWT = require("jsonwebtoken");
-const config = require("../../config");
+const config = require("../config");
+
+const router = express.Router();
 
 // User Model
-const User = require("../../models/User");
+const { User } = require("./User");
 
 // GET api/users
 // ~Get all users~
@@ -88,24 +88,24 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
-// Auth User
-router.post("/auth", async (req, res) => {
-  const { username, password } = req.body;
+// // Auth User
+// router.post("/auth", async (req, res) => {
+//   const { username, password } = req.body;
 
-  // Create JWT
-  const token = JWT.sign(user.toJSON(), config.JWT_SECRET, { expiresIn: "7d" });
+//   // Create JWT
+//   const token = JWT.sign(user.toJSON(), config.JWT_SECRET, { expiresIn: "7d" });
 
-  const { iat, exp } = JWT.decode(token);
-  // Respond with token
-  res.send({ iat, exp, token });
+//   const { iat, exp } = JWT.decode(token);
+//   // Respond with token
+//   res.send({ iat, exp, token });
 
-  try {
-    // Authenticate User
-    const user = await auth.authenicate(username, password);
-  } catch (error) {
-    // User unauthorized
-    console.log(error.message);
-  }
-});
+//   try {
+//     // Authenticate User
+//     const user = await auth.authenicate(username, password);
+//   } catch (error) {
+//     // User unauthorized
+//     console.log(error.message);
+//   }
+// });
 
 module.exports = router;

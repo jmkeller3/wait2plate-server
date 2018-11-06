@@ -1,6 +1,8 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
+mongoose.Promise = global.Promise;
+
 // Create Schema
 const ReportSchema = new Schema({
   restaurant_id: {
@@ -17,4 +19,6 @@ const ReportSchema = new Schema({
   }
 });
 
-module.exports = Report = mongoose.model("report", ReportSchema);
+const Report = mongoose.model("Report", ReportSchema);
+
+module.exports = { Report };
