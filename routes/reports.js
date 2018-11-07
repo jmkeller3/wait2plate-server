@@ -34,13 +34,13 @@ router.get("/:id", async (req, res) => {
 // ~Access Public
 router.post("/", async (req, res) => {
   const { restaurant_id, time, user_id } = req.body;
-
-  const report = new Report({
-    restaurant_id,
-    time,
-    user_id
-  });
   try {
+    const report = new Report({
+      restaurant_id,
+      time,
+      user_id
+    });
+
     const newReport = await report.save();
     res.sendStatus(201);
   } catch (error) {
