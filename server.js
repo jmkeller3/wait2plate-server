@@ -1,22 +1,32 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const { MONGODB_URI, PORT } = require("./config");
+const { MONGODB_URI, PORT, CLIENT_ORIGIN } = require("./config");
 const bodyParser = require("body-parser");
+const morgan = require("morgan");
+const cors = require("cors");
 
 const users = require("./routes/users");
 const reports = require("./routes/reports");
 const restaurants = require("./routes/restaurants");
+const auth = require("./routes/auth");
 
 const app = express();
 
-// Bodyparser Middleware
+// Middleware
 
 app.use(bodyParser.json());
+app.use(morgan("common"));
+app.use(
+  cors({
+    origin: CLIENT_ORIGIN
+  })
+);
 
 // Use Routes
 app.use("/api/users", users);
 app.use("/api/reports", reports);
 app.use("/api/restaurants", restaurants);
+app.use("/api/auth", auth);
 
 let server;
 
