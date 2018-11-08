@@ -4,9 +4,14 @@ const bcrypt = require("bcryptjs");
 const auth = require("../auth");
 const JWT = require("jsonwebtoken");
 const config = require("../config");
+const passport = require("passport");
+const bodyParser = require("body-parser");
 
 // User Model
 const User = require("../models/User");
+
+const jwtAuth = passport.authenicate("jwt", { session: false });
+const jsonParser = bodyParser.json();
 
 // GET api/users
 // ~Get all users~
@@ -24,10 +29,17 @@ router.get("/", async (req, res) => {
 // GET api/users
 // ~Get a single user~
 // Access Public
-router.get("/:id", async (req, res) => {
+router.get("/:id", jwtAuth, async (req, res) => {
   try {
-    const user = await User.findById(req.params.id);
-    res.send(user);
+    const data = await User.findById(req.params.id);
+    const user = await data.populate("Report");
+    user.exec(function(err, user) {
+      if (err) {
+        console.error(err);
+        res.status(500).json({ message: "Internal server error" });
+      }
+      res.status(200).json(user);
+    });
   } catch (error) {
     console.log(error.message);
   }
@@ -36,13 +48,81 @@ router.get("/:id", async (req, res) => {
 // POST api/users
 // ~Addnew user~
 // ~Access Public
-router.post("/", async (req, res) => {
+router.post("/", jsonParser, async (req, res) => {
+  // Check if missing fields
+  const requiredFields = ["email", "password", "cpassword", "username"];
+  const missingField = requiredFields.find(field => !(field in req.body));
+
+  if (missingField) {
+    return res.status(422).json({
+      code: 422,
+      reason: "ValidationError",
+      message: "Missing field",
+      location: missingField
+    });
+  }
+
+  // Check for non-strings in fields
+  const stringFields = ["username", "email", "password", "cpassword"];
+  const nonStringField = stringFields.find(
+    field => field in req.body && typeof req.body[field] !== "string"
+  );
+
+  if (nonStringField) {
+    return res.status(422).json({
+      code: 422,
+      reason: "ValidationError",
+      message: "Incorrect field type: expected string",
+      location: nonStringField
+    });
+  }
+
+  // Check size of fields
+  const sizedFields = {
+    username: {
+      min: 2
+    },
+    password: {
+      min: 10,
+      max: 72
+    }
+  };
+  const tooSmallField = Object.keys(sizedFields).find(
+    field =>
+      "min" in sizedFields[field] &&
+      req.body[field].trim().length < sizedFields[field].min
+  );
+  const tooLargeField = Object.keys(sizedFields).find(
+    field =>
+      "max" in sizedFields[field] &&
+      req.body[field].trim().length > sizedFields[field].max
+  );
+
+  if (tooSmallField || tooLargeField) {
+    return res.status(422).json({
+      code: 422,
+      reason: "ValidationError",
+      message: tooSmallField
+        ? `Must be at least ${sizedFields[tooSmallField].min} characters long`
+        : `Must be at most ${sizedFields[tooLargeField].max} characters long`,
+      location: tooSmallField || tooLargeField
+    });
+  }
+
   const { username, email, password, cpassword } = req.body;
-  //   Check if username is taken
 
   // Check if password and cpassword match
 
-  const user = new User({
+  if (password !== cpassword) {
+    return res.status(422).json({
+      code: 422,
+      reason: "ValidationError",
+      message: `Your password and confirmation did not match. Please try again`,
+      location: "cpassword"
+    });
+  }
+
+  const user = await new User({
     username,
     email,
     password,
@@ -59,20 +139,10 @@ router.post("/", async (req, res) => {
         res.sendStatus(201);
       } catch (error) {
         console.log(error.message);
+        res.sendStatus(500);
       }
     });
   });
-});
-
-// PUT api/users
-// ~Update a user~
-router.put("/:id", async (req, res) => {
-  try {
-    const user = await User.findOneAndUpdate({ _id: req.params.id }, req.body);
-    res.sendStatus(200);
-  } catch (error) {
-    console.log(error.message);
-  }
 });
 
 // DELETE api/users
@@ -83,8 +153,7 @@ router.delete("/:id", async (req, res) => {
     const user = await User.findOneAndDelete({ _id: req.params.id });
     res.sendStatus(204);
   } catch (error) {
-    res.status(404);
-    res.json({ success: false });
+    res.status(404).json({ success: false });
   }
 });
 
@@ -105,6 +174,7 @@ router.post("/auth", async (req, res) => {
   } catch (error) {
     // User unauthorized
     console.log(error.message);
+    res.sendStatus(403);
   }
 });
 
