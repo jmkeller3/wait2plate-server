@@ -19,7 +19,13 @@ const UserSchema = new mongoose.Schema({
   points: {
     type: String,
     default: 0
-  }
+  },
+  reports: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Report"
+    }
+  ]
 });
 
 const User = mongoose.model("User", UserSchema);

@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 
 const users = require("./routes/users");
 const reports = require("./routes/reports");
+const restaurants = require("./routes/restaurants");
 
 const app = express();
 
@@ -15,6 +16,7 @@ app.use(bodyParser.json());
 // Use Routes
 app.use("/api/users", users);
 app.use("/api/reports", reports);
+app.use("/api/restaurants", restaurants);
 
 let server;
 

@@ -1,15 +1,17 @@
 const express = require("express");
-const router = express.router();
+const router = express.Router();
+const { yelpAPI } = require("./yelp");
 
 // End Points
-router.get("https://api.yelp.com/v3/businesses/search", async (req, res) => {
-  const { latitude, longitude, city } = req.body;
-  const location = {
-    latitude,
-    longitude
-  };
+router.get("/", async (req, res) => {
   try {
+    const { latitude, longitude, location } = req.query;
+    const restaurants = await yelpAPI(latitude, longitude, location);
+    res.send(restaurants);
   } catch (error) {
     console.log(error.message);
+    res.sendStatus(500);
   }
 });
+
+module.exports = router;

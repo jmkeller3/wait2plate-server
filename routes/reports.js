@@ -13,6 +13,7 @@ router.get("/", async (req, res) => {
     const reports = await Report.find().sort({ date: -1 });
     res.json(reports);
   } catch (error) {
+    res.sendStatus(500);
     console.log(error.message);
   }
 });
@@ -25,6 +26,7 @@ router.get("/:id", async (req, res) => {
     const report = await Report.findById(req.params.id);
     res.sendStatus(report);
   } catch (error) {
+    res.sendStatus(500);
     console.log(error.message);
   }
 });
@@ -33,8 +35,9 @@ router.get("/:id", async (req, res) => {
 // ~Add new report~
 // ~Access Public
 router.post("/", async (req, res) => {
-  const { restaurant_id, time, user_id } = req.body;
   try {
+    const { restaurant_id, time, user_id } = req.body;
+
     const report = new Report({
       restaurant_id,
       time,
@@ -44,6 +47,7 @@ router.post("/", async (req, res) => {
     const newReport = await report.save();
     res.sendStatus(201);
   } catch (error) {
+    res.sendStatus(500);
     console.log(error.message);
   }
 });
@@ -58,6 +62,7 @@ router.put("/:id", async (req, res) => {
     );
     res.sendStatus(200);
   } catch (error) {
+    res.sendStatus(500);
     console.log(error.message);
   }
 });
@@ -70,7 +75,7 @@ router.delete("/:id", async (req, res) => {
     const report = await Report.findOneAndDelete({ _id: req.params.id });
     res.sendStatus(204);
   } catch (error) {
-    res.status(404);
+    res.sendStatus(404);
     res.json({ success: false });
   }
 });
