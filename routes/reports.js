@@ -1,17 +1,30 @@
 const express = require("express");
 const router = express.Router();
+const passport = require("passport");
 
 // Report Model
 const Report = require("../models/Report");
+
+const jwtAuth = passport.authenticate("JWT", { session: false });
 
 // GET api/reports
 // ~Get all reports~
 // ~Access Public
 
-router.get("/", async (req, res) => {
+router.get("/", jwtAuth, async (req, res) => {
   try {
-    const reports = await Report.find().sort({ date: -1 });
-    res.json(reports);
+    const reports = await Report.find().populate("User");
+    res.status(200).json(
+      reports.map(report => {
+        return {
+          id: report._id,
+          user_id: report.user._id,
+          restaurant_id: report.restaurant_id,
+          time: report.time,
+          date: report.date
+        };
+      })
+    );
   } catch (error) {
     res.sendStatus(500);
     console.log(error.message);
@@ -21,10 +34,10 @@ router.get("/", async (req, res) => {
 // GET api/reports
 // ~Get a single report~
 // Access Public
-router.get("/:id", async (req, res) => {
+router.get("/:id", jwtAuth, async (req, res) => {
   try {
-    const report = await Report.findById(req.params.id);
-    res.sendStatus(report);
+    const report = await Report.findById(req.params.id).populate("User");
+    res.status(200).json(report.serialize());
   } catch (error) {
     res.sendStatus(500);
     console.log(error.message);
@@ -34,15 +47,43 @@ router.get("/:id", async (req, res) => {
 // POST api/reports
 // ~Add new report~
 // ~Access Public
-router.post("/", async (req, res) => {
-  try {
-    const { restaurant_id, time, user_id } = req.body;
+router.post("/", jwtAuth, async (req, res) => {
+  const requiredFields = ["restaurant_id", "time", "user_id"];
+  for (let i = 0; i < requiredFields.length; i++) {
+    const field = requiredFields[i];
+    if (!(field in req.body)) {
+      const message = `Missing \`${field}\` in request body`;
+      console.log(message);
+      return res.status(400).send(message);
+    }
+  }
 
-    const report = new Report({
-      restaurant_id,
-      time,
-      user_id
-    });
+  try {
+    const { restaurant_id, time } = req.body;
+    const user = await user.findById(req.user.id);
+    if (user) {
+      try {
+        const newReport = Report.create({
+          restaurant_id,
+          time,
+          user_id: req.user.id
+        });
+
+        user.reports.push(newReport);
+        user.save();
+
+        res.status(201).json(newReport.serialize());
+      } catch (error) {
+        console.log(error);
+        res.sendStatus(400);
+      }
+    }
+
+    // const report = new Report({
+    //   restaurant_id,
+    //   time,
+    //   user_id
+    // });
 
     const newReport = await report.save();
     res.sendStatus(201);

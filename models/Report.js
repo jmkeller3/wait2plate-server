@@ -20,5 +20,14 @@ const ReportSchema = new mongoose.Schema({
   }
 });
 
+ReportSchema.methods.serialize = function() {
+  return {
+    restaurant_id: this.restaurant_id || "",
+    time: this.time || "",
+    user: this.user || "",
+    date: this.date || ""
+  };
+};
+
 const Report = mongoose.model("Report", ReportSchema);
 module.exports = Report;
