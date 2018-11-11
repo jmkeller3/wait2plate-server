@@ -4,8 +4,9 @@ const passport = require("passport");
 
 // Report Model
 const Report = require("../models/Report");
+const User = require("../models/User");
 
-const jwtAuth = passport.authenticate("JWT", { session: false });
+const jwtAuth = passport.authenticate("jwt", { session: false });
 
 // GET api/reports
 // ~Get all reports~
@@ -60,23 +61,21 @@ router.post("/", jwtAuth, async (req, res) => {
 
   try {
     const { restaurant_id, time } = req.body;
-    const user = await user.findById(req.user.id);
-    if (user) {
-      try {
-        const newReport = Report.create({
-          restaurant_id,
-          time,
-          user_id: req.user.id
-        });
+    try {
+      const user = await User.findById(req.body.user_id);
+      const newReport = Report.create({
+        restaurant_id,
+        time: [...time],
+        user_id: req.user.id
+      });
 
-        user.reports.push(newReport);
-        user.save();
+      user.reports.push(newReport);
+      user.save();
 
-        res.status(201).json(newReport.serialize());
-      } catch (error) {
-        console.log(error);
-        res.sendStatus(400);
-      }
+      res.status(201).json(newReport.serialize());
+    } catch (error) {
+      console.log(error);
+      res.sendStatus(400);
     }
 
     // const report = new Report({
