@@ -4,11 +4,14 @@ const { MONGODB_URI, PORT, CLIENT_ORIGIN } = require("./config");
 const bodyParser = require("body-parser");
 const morgan = require("morgan");
 const cors = require("cors");
+const passport = require("passport");
 
 const users = require("./routes/users");
 const reports = require("./routes/reports");
 const restaurants = require("./routes/restaurants");
 const auth = require("./routes/auth");
+
+const { localStrategy, jwtStrategy } = require("./strategies");
 
 const app = express();
 
@@ -21,6 +24,10 @@ app.use(
     origin: CLIENT_ORIGIN
   })
 );
+
+// Passport JWT
+passport.use(localStrategy);
+passport.use(jwtStrategy);
 
 // Use Routes
 app.use("/api/users", users);

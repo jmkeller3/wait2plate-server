@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
-const auth = require("../auth");
+const auth = require("./auth");
 const JWT = require("jsonwebtoken");
 const config = require("../config");
 const passport = require("passport");
@@ -10,7 +10,7 @@ const bodyParser = require("body-parser");
 // User Model
 const User = require("../models/User");
 
-const jwtAuth = passport.authenicate("jwt", { session: false });
+const jwtAuth = passport.authenticate("jwt", { session: false });
 const jsonParser = bodyParser.json();
 
 // GET api/users

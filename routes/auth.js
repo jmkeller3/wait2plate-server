@@ -26,4 +26,4 @@ router.post("/login", localAuth, async (req, res) => {
   });
 });
 
-module.exports = { router };
+module.exports = router;
