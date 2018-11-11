@@ -103,8 +103,18 @@ router.post("/", jsonParser, async (req, res) => {
       location: tooSmallField || tooLargeField
     });
   }
-
   const { username, email, password, cpassword } = req.body;
+
+  // Check if username is availible
+  const users = await User.find({ username: username });
+  if (users.length !== 0) {
+    return res.status(422).json({
+      code: 422,
+      reason: "ValidationError",
+      message: "Username already taken",
+      location: "username"
+    });
+  }
 
   // Check if password and cpassword match
 
