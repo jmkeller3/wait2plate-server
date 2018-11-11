@@ -6,6 +6,7 @@ const JWT = require("jsonwebtoken");
 const config = require("../config");
 const passport = require("passport");
 const bodyParser = require("body-parser");
+const mongoose = require("mongoose");
 
 // User Model
 const User = require("../models/User");
@@ -31,15 +32,9 @@ router.get("/", async (req, res) => {
 // Access Public
 router.get("/:id", jwtAuth, async (req, res) => {
   try {
-    const data = await User.findById(req.params.id);
-    const user = await data.populate("Report");
-    user.exec(function(err, user) {
-      if (err) {
-        console.error(err);
-        res.status(500).json({ message: "Internal server error" });
-      }
-      res.status(200).json(user);
-    });
+    const user = await User.findById(req.params.id);
+    user.populate("Report");
+    res.status(200).json(user);
   } catch (error) {
     console.log(error.message);
   }
