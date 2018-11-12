@@ -17,12 +17,12 @@ const jwtAuth = passport.authenticate("jwt", { session: false });
 
 router.get("/", jwtAuth, async (req, res) => {
   try {
-    const reports = await Report.find().populate("User");
+    const reports = await Report.find();
     res.status(200).json(
       reports.map(report => {
         return {
           id: report._id,
-          user_id: report.user._id,
+          // user_id: report.user._id,
           restaurant_id: report.restaurant_id,
           time: report.time,
           date: report.date
@@ -98,7 +98,7 @@ router.post("/", jsonParser, jwtAuth, async (req, res) => {
 
 // PUT api/reports
 // ~Update a user~
-router.put("/:id", async (req, res) => {
+router.put("/:id", jwtAuth, async (req, res) => {
   try {
     const report = await Report.findOneAndUpdate(
       { _id: req.params.id },
@@ -114,7 +114,7 @@ router.put("/:id", async (req, res) => {
 // DELETE api/reports
 // ~Delete a report~
 // ~Access Public
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", jwtAuth, async (req, res) => {
   try {
     const report = await Report.findOneAndDelete({ _id: req.params.id });
     res.sendStatus(204);

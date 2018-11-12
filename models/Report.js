@@ -36,15 +36,15 @@ ReportSchema.methods.serialize = function() {
   };
 };
 
-ReportSchema.pre("findOne", function(next) {
-  this.populate("user");
-  next();
-});
+// ReportSchema.pre("findOne", function(next) {
+//   this.populate("user");
+//   next();
+// });
 
-ReportSchema.pre("find", function(next) {
-  this.populate("user");
-  next();
-});
+// ReportSchema.pre("find", function(next) {
+//   this.populate("user");
+//   next();
+// });
 
 const Report = mongoose.model("Report", ReportSchema);
 module.exports = Report;
