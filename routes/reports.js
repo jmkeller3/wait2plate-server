@@ -1,6 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const passport = require("passport");
+const bodyParser = require("body-parser");
+
+const jsonParser = bodyParser.json();
 
 // Report Model
 const Report = require("../models/Report");
@@ -48,7 +51,7 @@ router.get("/:id", jwtAuth, async (req, res) => {
 // POST api/reports
 // ~Add new report~
 // ~Access Public
-router.post("/", jwtAuth, async (req, res) => {
+router.post("/", jsonParser, jwtAuth, async (req, res) => {
   const requiredFields = ["restaurant_id", "time", "user_id"];
   for (let i = 0; i < requiredFields.length; i++) {
     const field = requiredFields[i];
@@ -60,35 +63,36 @@ router.post("/", jwtAuth, async (req, res) => {
   }
 
   try {
-    const { restaurant_id, time } = req.body;
-    try {
-      const user = await User.findById(req.body.user_id);
-      const newReport = Report.create({
-        restaurant_id,
-        time: [...time],
-        user_id: req.user.id
-      });
+    const user = await User.findById(req.body.user_id);
+    if (user) {
+      try {
+        const { restaurant_id, time, user_id } = req.body;
+        const newReport = await Report.create({
+          restaurant_id,
+          time,
+          user_id
+        });
 
-      user.reports.push(newReport);
-      user.save();
-
-      res.status(201).json(newReport.serialize());
-    } catch (error) {
-      console.log(error);
-      res.sendStatus(400);
+        user.reports.push(newReport);
+        user.save();
+        res.status(201).json({
+          id: newReport._id,
+          restaurant: newReport.restaurant_id,
+          user: newReport.user_id,
+          time: newReport.time
+        });
+      } catch (error) {
+        console.log(error.message);
+        res.status(500).json({ message: "Internal Server Error!" });
+      }
+    } else {
+      const message = `User not found! Please login or sign-up.`;
+      console.log(message);
+      return res.status(400).send(message);
     }
-
-    // const report = new Report({
-    //   restaurant_id,
-    //   time,
-    //   user_id
-    // });
-
-    const newReport = await report.save();
-    res.sendStatus(201);
   } catch (error) {
-    res.sendStatus(500);
     console.log(error.message);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 });
 

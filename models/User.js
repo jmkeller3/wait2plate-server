@@ -1,6 +1,8 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 
+const Report = require("./Report");
+
 // Create Schema
 const UserSchema = new mongoose.Schema({
   username: {
@@ -33,9 +35,20 @@ UserSchema.methods.serialize = function() {
   return {
     username: this.username || "",
     email: this.email || "",
-    points: this.points || ""
+    points: this.points || "",
+    reports: this.reports || ""
   };
 };
+
+// UserSchema.pre("findOne", function(next) {
+//   this.populate("reports");
+//   next();
+// });
+
+// UserSchema.pre("find", function(next) {
+//   this.populate("reports");
+//   next();
+// });
 
 UserSchema.methods.validatePassword = function(password) {
   return bcrypt.compare(password, this.password);
