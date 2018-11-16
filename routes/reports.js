@@ -79,12 +79,14 @@ router.post("/", jsonParser, jwtAuth, async (req, res) => {
 
         newReport.save();
         user.reports.push(newReport._id);
+        user.points += 1;
         user.save();
         res.status(201).json({
           id: newReport.id,
           restaurant: newReport.restaurant_id,
           time: newReport.time,
-          user: user._id
+          user: user._id,
+          points: user.points
         });
       } catch (error) {
         console.log(error.message);
@@ -109,7 +111,7 @@ router.put("/:id", jwtAuth, async (req, res) => {
       { _id: req.params.id },
       req.body
     );
-    res.sendStatus(200);
+    res.status(200).json(report.serialize());
   } catch (error) {
     res.sendStatus(500);
     console.log(error.message);

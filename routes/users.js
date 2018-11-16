@@ -28,15 +28,26 @@ router.get("/", async (req, res) => {
     console.log(error);
   }
 });
-
+fetch;
 // GET api/users
 // ~Get a single user~
 // Access Public
 router.get("/:id", jwtAuth, async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
-    user.populate("Report");
-    res.status(200).json(user);
+    await user.populate("Report");
+    const reports = user.reports;
+    reports.map(async report => {
+      const restaurant = await fetch(
+        `https://api.yelp.com/v3/businesses/${report.restaurant_id}`
+      );
+      return {
+        ...report,
+        restaurant_id: restaurant.name
+      };
+    });
+
+    res.status(200).json(user.serialize());
   } catch (error) {
     console.log(error.message);
   }
