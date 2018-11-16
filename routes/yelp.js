@@ -19,6 +19,7 @@ async function yelpAPI(latitude, longitude, location) {
     const businesses = JSON.parse(data.body).businesses;
     const prettyData = businesses.map(business => {
       let result = {
+        id: business.id,
         name: business.name,
         url: business.url,
         image_url: business.image_url,

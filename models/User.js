@@ -36,6 +36,7 @@ const UserSchema = new mongoose.Schema({
 
 UserSchema.methods.serialize = function() {
   return {
+    id: this._id,
     username: this.username,
     email: this.email,
     points: this.points,
@@ -43,15 +44,15 @@ UserSchema.methods.serialize = function() {
   };
 };
 
-UserSchema.pre("findOne", function(next) {
-  this.populate("reports");
-  next();
-});
+// UserSchema.pre("findOne", function(next) {
+//   this.populate("reports");
+//   next();
+// });
 
-UserSchema.pre("find", function(next) {
-  this.populate("reports");
-  next();
-});
+// UserSchema.pre("find", function(next) {
+//   this.populate("reports");
+//   next();
+// });
 
 UserSchema.methods.validatePassword = function(password) {
   return bcrypt.compare(password, this.password);

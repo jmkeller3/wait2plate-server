@@ -9,7 +9,7 @@ const passport = require("passport");
 const users = require("./routes/users");
 const reports = require("./routes/reports");
 const restaurants = require("./routes/restaurants");
-const auth = require("./routes/auth");
+const { router: auth } = require("./routes/auth");
 
 mongoose.Promise = global.Promise;
 

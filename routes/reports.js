@@ -25,7 +25,7 @@ router.get("/", jwtAuth, async (req, res) => {
       reports.map(report => {
         return {
           id: report._id,
-          user_id: report.user_id,
+          user_id: report.user._id,
           restaurant_id: report.restaurant_id,
           time: report.time,
           date: report.date
@@ -55,7 +55,7 @@ router.get("/:id", jwtAuth, async (req, res) => {
 // ~Add new report~
 // ~Access Public
 router.post("/", jsonParser, jwtAuth, async (req, res) => {
-  const requiredFields = ["restaurant_id", "time", "user_id"];
+  const requiredFields = ["restaurant_id", "time"];
   for (let i = 0; i < requiredFields.length; i++) {
     const field = requiredFields[i];
     if (!(field in req.body)) {
@@ -64,50 +64,41 @@ router.post("/", jsonParser, jwtAuth, async (req, res) => {
       return res.status(400).send(message);
     }
   }
-  const { restaurant_id, time, user_id } = req.body;
-  User.findOne({ _id: user_id })
-    .then(user => {
-      Report.create({
-        restaurant_id,
-        time,
-        user: user_id
-      }).then(report =>
+
+  try {
+    const user = await User.findById(req.user.id);
+    if (user) {
+      try {
+        const { restaurant_id, time } = req.body;
+        const newReport = await Report({
+          _id: new mongoose.Types.ObjectId(),
+          restaurant_id,
+          time,
+          user: user._id
+        });
+
+        newReport.save();
+        user.reports.push(newReport._id);
+        user.save();
         res.status(201).json({
-          id: report.id,
-          restaurant: report.restaurant_id,
-          time: report.time,
-          user: user.id
-        })
-      );
-    })
-    .catch(err => console.log(err));
-
-  //   try {
-  //     const user = await User.findById(req.body.user_id);
-  //     if (user) {
-  //       try {
-  //         const { restaurant_id, time } = req.body;
-  //         const newReport = await Report({
-  //           _id: new mongoose.Types.ObjectId(),
-  //           restaurant_id,
-  //           time,
-  //           user_id
-  //         });
-
-  //         newReport.save();
-  //       } catch (error) {
-  //         console.log(error.message);
-  //         res.status(500).json({ message: "Internal Server Error!" });
-  //       }
-  //     } else {
-  //       const message = `User not found! Please login or sign-up.`;
-  //       console.log(message);
-  //       return res.status(400).send(message);
-  //     }
-  //   } catch (error) {
-  //     console.log(error.message);
-  //     res.status(500).json({ message: "Internal Server Error" });
-  //   }
+          id: newReport.id,
+          restaurant: newReport.restaurant_id,
+          time: newReport.time,
+          user: user._id
+        });
+      } catch (error) {
+        console.log(error.message);
+        res.status(500).json({ message: "Internal Server Error!" });
+      }
+    } else {
+      const message = `User not found! Please login or sign-up.`;
+      console.log(message);
+      return res.status(400).send(message);
+    }
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
 });
 
 // PUT api/reports

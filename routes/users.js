@@ -47,7 +47,7 @@ router.get("/:id", jwtAuth, async (req, res) => {
 // ~Access Public
 router.post("/", jsonParser, async (req, res) => {
   // Check if missing fields
-  const requiredFields = ["email", "password", "cpassword", "username"];
+  const requiredFields = ["email", "password", "username"];
   const missingField = requiredFields.find(field => !(field in req.body));
 
   if (missingField) {
@@ -60,7 +60,7 @@ router.post("/", jsonParser, async (req, res) => {
   }
 
   // Check for non-strings in fields
-  const stringFields = ["username", "email", "password", "cpassword"];
+  const stringFields = ["username", "email", "password"];
   const nonStringField = stringFields.find(
     field => field in req.body && typeof req.body[field] !== "string"
   );
@@ -105,7 +105,7 @@ router.post("/", jsonParser, async (req, res) => {
       location: tooSmallField || tooLargeField
     });
   }
-  const { username, email, password, cpassword } = req.body;
+  const { username, email, password } = req.body;
 
   // Check if username is availible
   const users = await User.find({ username: username });
@@ -120,20 +120,19 @@ router.post("/", jsonParser, async (req, res) => {
 
   // Check if password and cpassword match
 
-  if (password !== cpassword) {
-    return res.status(422).json({
-      code: 422,
-      reason: "ValidationError",
-      message: `Your password and confirmation did not match. Please try again`,
-      location: "cpassword"
-    });
-  }
+  // if (password !== cpassword) {
+  //   return res.status(422).json({
+  //     code: 422,
+  //     reason: "ValidationError",
+  //     message: `Your password and confirmation did not match. Please try again`,
+  //     location: "cpassword"
+  //   });
+  // }
 
   const user = await new User({
     username,
     email,
-    password,
-    cpassword
+    password
   });
 
   //   protect password
@@ -142,8 +141,11 @@ router.post("/", jsonParser, async (req, res) => {
       user.password = hash;
       //   save user to db
       try {
-        const newUser = await user.save();
-        res.sendStatus(201);
+        await user.save();
+        const authToken = auth.createAuthToken(user.serialize());
+        res.status(201).json({
+          authToken
+        });
       } catch (error) {
         console.log(error.message);
         res.sendStatus(500);

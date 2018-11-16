@@ -6,6 +6,6 @@ module.exports = {
   MONGODB_URI:
     "mongodb://admin:password123@ds151853.mlab.com:51853/wait2plate-api",
   TEST_DATABASE_URI:
-    "mongodb://admin:password123@ds151853.mlab.com:37097/wait2plate-test",
+    "mongodb://admin:password123@ds037097.mlab.com:37097/wait2plate-test",
   JWT_SECRET: process.env.JWT_SECRET || "Jesusisthekey"
 };
