@@ -2,6 +2,9 @@ const express = require("express");
 const router = express.Router();
 const passport = require("passport");
 const bodyParser = require("body-parser");
+const mongoose = require("mongoose");
+
+mongoose.Promise = global.Promise;
 
 const jsonParser = bodyParser.json();
 
@@ -22,7 +25,7 @@ router.get("/", jwtAuth, async (req, res) => {
       reports.map(report => {
         return {
           id: report._id,
-          // user_id: report.user._id,
+          user_id: report.user_id,
           restaurant_id: report.restaurant_id,
           time: report.time,
           date: report.date
@@ -61,39 +64,50 @@ router.post("/", jsonParser, jwtAuth, async (req, res) => {
       return res.status(400).send(message);
     }
   }
-
-  try {
-    const user = await User.findById(req.body.user_id);
-    if (user) {
-      try {
-        const { restaurant_id, time, user_id } = req.body;
-        const newReport = await Report.create({
-          restaurant_id,
-          time,
-          user_id
-        });
-
-        user.reports.push(newReport);
-        user.save();
+  const { restaurant_id, time, user_id } = req.body;
+  User.findOne({ _id: user_id })
+    .then(user => {
+      Report.create({
+        restaurant_id,
+        time,
+        user: user_id
+      }).then(report =>
         res.status(201).json({
-          id: newReport._id,
-          restaurant: newReport.restaurant_id,
-          user: newReport.user_id,
-          time: newReport.time
-        });
-      } catch (error) {
-        console.log(error.message);
-        res.status(500).json({ message: "Internal Server Error!" });
-      }
-    } else {
-      const message = `User not found! Please login or sign-up.`;
-      console.log(message);
-      return res.status(400).send(message);
-    }
-  } catch (error) {
-    console.log(error.message);
-    res.status(500).json({ message: "Internal Server Error" });
-  }
+          id: report.id,
+          restaurant: report.restaurant_id,
+          time: report.time,
+          user: user.id
+        })
+      );
+    })
+    .catch(err => console.log(err));
+
+  //   try {
+  //     const user = await User.findById(req.body.user_id);
+  //     if (user) {
+  //       try {
+  //         const { restaurant_id, time } = req.body;
+  //         const newReport = await Report({
+  //           _id: new mongoose.Types.ObjectId(),
+  //           restaurant_id,
+  //           time,
+  //           user_id
+  //         });
+
+  //         newReport.save();
+  //       } catch (error) {
+  //         console.log(error.message);
+  //         res.status(500).json({ message: "Internal Server Error!" });
+  //       }
+  //     } else {
+  //       const message = `User not found! Please login or sign-up.`;
+  //       console.log(message);
+  //       return res.status(400).send(message);
+  //     }
+  //   } catch (error) {
+  //     console.log(error.message);
+  //     res.status(500).json({ message: "Internal Server Error" });
+  //   }
 });
 
 // PUT api/reports

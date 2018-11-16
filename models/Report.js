@@ -29,22 +29,22 @@ const ReportSchema = new mongoose.Schema({
 ReportSchema.methods.serialize = function() {
   return {
     id: this._id,
-    restaurant_id: this.restaurant_id || "",
-    time: this.time || "",
-    user_id: this.user_id || "",
-    date: this.date || ""
+    restaurant_id: this.restaurant_id,
+    time: this.time,
+    user_id: this.user_id,
+    date: this.date
   };
 };
 
-// ReportSchema.pre("findOne", function(next) {
-//   this.populate("user");
-//   next();
-// });
+ReportSchema.pre("findOne", function(next) {
+  this.populate("user");
+  next();
+});
 
-// ReportSchema.pre("find", function(next) {
-//   this.populate("user");
-//   next();
-// });
+ReportSchema.pre("find", function(next) {
+  this.populate("user");
+  next();
+});
 
 const Report = mongoose.model("Report", ReportSchema);
 module.exports = Report;

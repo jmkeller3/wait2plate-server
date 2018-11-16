@@ -8,6 +8,8 @@ const passport = require("passport");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 
+mongoose.Promise = global.Promise;
+
 // User Model
 const User = require("../models/User");
 

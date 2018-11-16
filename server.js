@@ -11,6 +11,8 @@ const reports = require("./routes/reports");
 const restaurants = require("./routes/restaurants");
 const auth = require("./routes/auth");
 
+mongoose.Promise = global.Promise;
+
 const { localStrategy, jwtStrategy } = require("./strategies");
 
 const app = express();
@@ -75,7 +77,11 @@ function closeServer() {
 }
 
 if (require.main === module) {
-  runServer(MONGODB_URI).catch(error => console.error(error));
+  try {
+    runServer(MONGODB_URI);
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 module.exports = { app, runServer, closeServer };
