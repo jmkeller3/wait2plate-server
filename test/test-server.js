@@ -2,11 +2,12 @@ const chai = require("chai");
 const chaiHttp = require("chai-http");
 const mongoose = require("mongoose");
 const faker = require("faker");
-const { createAuthToken } = require("auth");
+const { createAuthToken } = require("../routes/auth");
+const jwt = require("jsonwebtoken");
 
 const { app, closeServer, runServer } = require("../server");
 
-const { TEST_DATABASE_URI } = require("../config");
+const { JWT_SECRET, TEST_DATABASE_URI } = require("../config");
 
 const should = chai.should();
 chai.use(chaiHttp);
@@ -63,11 +64,13 @@ function tearDownDb() {
 }
 
 describe("API", function() {
+  const username = "exampleUser";
+  const email = "exampleEmail";
+  const password = "examplePassword";
+
   before(function() {
     return runServer(TEST_DATABASE_URI);
   });
-
-  beforeEach(function() {});
 
   after(function() {
     return closeServer();
@@ -85,13 +88,28 @@ describe("API", function() {
     });
 
     it("should 200 on reports GET requests", function() {
+      const token = jwt.sign(
+        {
+          user: {
+            username,
+            email
+          }
+        },
+        JWT_SECRET,
+        {
+          algorithm: "HS256",
+          subject: username,
+          expiresIn: "7d"
+        }
+      );
+
       return chai
         .request(app)
         .get("/api/reports")
+        .set("authorization", `Bearer ${token}`)
         .then(function(res) {
           res.should.have.status(200);
           res.should.be.json;
-          done();
         });
     });
   });
