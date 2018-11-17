@@ -28,7 +28,7 @@ router.get("/", async (req, res) => {
     console.log(error);
   }
 });
-fetch;
+
 // GET api/users
 // ~Get a single user~
 // Access Public

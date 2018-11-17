@@ -2,6 +2,7 @@ const chai = require("chai");
 const chaiHttp = require("chai-http");
 const mongoose = require("mongoose");
 const faker = require("faker");
+const { createAuthToken } = require("auth");
 
 const { app, closeServer, runServer } = require("../server");
 
@@ -10,6 +11,7 @@ const { TEST_DATABASE_URI } = require("../config");
 const should = chai.should();
 chai.use(chaiHttp);
 
+let authToken;
 function seedReportData() {
   console.info(`Seeding Report Data...`);
   const seedData = [];
@@ -20,11 +22,12 @@ function seedReportData() {
   return Report.insertMany(seedData);
 }
 
-function generateReportData() {
+function generateReportData(id) {
   return {
     id: Math.floor(Math.random * 1000),
     restaurant_id: Math.floor(Math.random * 10),
-    time: Math.floor(Math.random * 5000)
+    time: Math.floor(Math.random * 5000),
+    user: id
   };
 }
 
@@ -37,19 +40,21 @@ function seedUserData() {
 }
 
 function generateUserData() {
-  return {
+  const user = {
     id: Math.floor(Math.random * 100),
-    username: faker.username,
-    email: faker.email,
-    password: faker.password,
+    username: faker.internet.username(),
+    email: faker.internet.email(),
+    password: faker.internet.password(),
     reports: [
-      generateReportData(),
-      generateReportData(),
-      generateReportData(),
-      generateReportData(),
-      generateReportData()
+      generateReportData(id),
+      generateReportData(id),
+      generateReportData(id),
+      generateReportData(id),
+      generateReportData(id)
     ]
   };
+  authToken = createAuthToken(user);
+  return authToken;
 }
 
 function tearDownDb() {
