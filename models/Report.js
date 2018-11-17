@@ -1,10 +1,14 @@
 const mongoose = require("mongoose");
 
-const User = require("./User");
+// const User = require("./User");
 
 // Create Schema
 const ReportSchema = new mongoose.Schema({
   restaurant_id: {
+    type: String,
+    required: true
+  },
+  restaurant_name: {
     type: String,
     required: true
   },
@@ -30,6 +34,7 @@ ReportSchema.methods.serialize = function() {
   return {
     id: this._id,
     restaurant_id: this.restaurant_id,
+    restaurant_name: this.restaurant_name,
     time: this.time,
     user_id: this.user_id,
     date: this.date

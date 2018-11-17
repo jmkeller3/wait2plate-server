@@ -27,6 +27,7 @@ router.get("/", jwtAuth, async (req, res) => {
           id: report._id,
           user_id: report.user._id,
           restaurant_id: report.restaurant_id,
+          restaurant_name: report.restaurant_name,
           time: report.time,
           date: report.date
         };
@@ -55,7 +56,7 @@ router.get("/:id", jwtAuth, async (req, res) => {
 // ~Add new report~
 // ~Access Public
 router.post("/", jsonParser, jwtAuth, async (req, res) => {
-  const requiredFields = ["restaurant_id", "time"];
+  const requiredFields = ["restaurant_id", "restaurant_name", "time"];
   for (let i = 0; i < requiredFields.length; i++) {
     const field = requiredFields[i];
     if (!(field in req.body)) {
@@ -69,10 +70,11 @@ router.post("/", jsonParser, jwtAuth, async (req, res) => {
     const user = await User.findById(req.user.id);
     if (user) {
       try {
-        const { restaurant_id, time } = req.body;
+        const { restaurant_id, restaurant_name, time } = req.body;
         const newReport = await Report({
           _id: new mongoose.Types.ObjectId(),
           restaurant_id,
+          restaurant_name,
           time,
           user: user._id
         });
@@ -83,7 +85,8 @@ router.post("/", jsonParser, jwtAuth, async (req, res) => {
         user.save();
         res.status(201).json({
           id: newReport.id,
-          restaurant: newReport.restaurant_id,
+          restaurant_id: newReport.restaurant_id,
+          restaurant_name: newReport.restaurant_name,
           time: newReport.time,
           user: user._id,
           points: user.points
