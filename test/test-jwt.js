@@ -32,7 +32,7 @@ describe("Protected endpoint", function() {
   });
 
   afterEach(function() {
-    return User.deleteOne({ username });
+    return User.deleteMany({});
   });
 
   after(function() {
