@@ -13,9 +13,9 @@ const expect = chai.expect;
 chai.use(chaiHttp);
 
 describe("Protected endpoint", function() {
-  const username = "exampleUser";
-  const email = "exampleEmail";
-  const password = "examplePassword";
+  const username = "exampleUser2";
+  const email = "exampleEmail2";
+  const password = "examplePassword2";
 
   before(function() {
     return runServer(TEST_DATABASE_URI);
