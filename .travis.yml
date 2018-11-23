@@ -1,0 +1,8 @@
+deploy:
+  provider: heroku
+  api_key:
+    secure: L1GtpUYqdRzIe6OCYV4kQ/YRvB/b15ZizjmnUf3lJBTeMXJCjnsz4r3tXk4GJ3caEf1abrcbF0anJreAxKaeCq4DYi+0WjOzKZSZJ9pudWgP+ka7R4sFbV2+gXfsRPx9m5Da6KRxHv51sy4pLU6b7zsZAmQvsq33sjyXyDJA0btlVjVUl8WfGIapsJCirjUdGi6+CIHz9b09YWZ2MBbjw/yVU23vgP7w6pVIzFbI6W0ppITM3TKOSZb2dtRDC57LJBWKMHwfdo+hDahBm4LeT0dxxmOXQ8csaM+8PgpIQiRDsSfZC0b5tLFmV92kJLTO9GGP4kdk7SRm3Duwle0M/H+0ku+WQhgxXvzHdiWkjt4uouyEZtLbRa6+OLnS+eTeSwsliiL7jIxyOMuKSVcjhwaLRE8hX3JiHwJU+TuU3+Op8+3gdb5CjN/HVHpkGUzRXDi0cIQJLhONzQ8vwDuey5QtU30DJiB/xifptPzK+UxyBKZvYO0wDrK0CSYihx+SoZHH0XJPMv4FBcwLem1T9vddXuYtUpy8YIYeVSO7pMnvVyWdcj/mPqvmqatwT+ybFbxaafJBBT/mNw1+MUF0e8LbmQt9McpmUCPnHv++mqyi6WvWONxhzMyL5ufi3y2SW6vH+oFXMBM1zVoJiaavAjhxOK/5w2gXLrKG+CPlM8M=
+  app: frozen-brook-34776
+  on:
+    repo: jmkeller3/wait2plate-server
+    branch: testing-yelp
