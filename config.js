@@ -1,5 +1,5 @@
-(exports.PORT = process.env.PORT || 4000),
-  (exports.URL = process.env.BASE_URL || "http://localhost:4000"),
+(exports.PORT = process.env.PORT || 8000),
+  (exports.URL = process.env.BASE_URL || "http://localhost:8000"),
   (exports.CLIENT_ORIGIN = true),
   (exports.MONGODB_URI =
     "mongodb://admin:password123@ds151853.mlab.com:51853/wait2plate-api"),
