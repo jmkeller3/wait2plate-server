@@ -10,7 +10,9 @@ router.get("/", async (req, res) => {
     const restaurants = await yelpAPI(latitude, longitude, location);
 
     const times = await Report.aggregate([
-      { $group: { _id: "$restaurant_id", avgTime: { $avg: "$time" } } }
+      {
+        $group: { _id: "$restaurant_id", avgTime: { $avg: "$reported_times" } }
+      }
     ]);
 
     const client_restaurants = restaurants.map(restaurant => {
@@ -18,11 +20,11 @@ router.get("/", async (req, res) => {
       if (wait_time !== undefined)
         return {
           ...restaurant,
-          time: wait_time.avgTime
+          reported_times: wait_time.avgTime
         };
       return {
         ...restaurant,
-        time: `No times reported.`
+        reported_times: `No times reported.`
       };
     });
 

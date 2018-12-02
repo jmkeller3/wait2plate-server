@@ -2,7 +2,6 @@ const express = require("express");
 const passport = require("passport");
 const bodyParser = require("body-parser");
 const JWT = require("jsonwebtoken");
-
 const config = require("../config");
 const router = express.Router();
 

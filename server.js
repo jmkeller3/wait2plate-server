@@ -26,6 +26,7 @@ app.use(
     origin: CLIENT_ORIGIN
   })
 );
+app.options("*", cors());
 
 // Passport JWT
 passport.use(localStrategy);

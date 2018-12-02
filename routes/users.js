@@ -147,6 +147,7 @@ router.post("/", jsonParser, async (req, res) => {
         res.status(201).json({
           authToken
         });
+        console.log(authToken);
       } catch (error) {
         console.log(error.message);
         res.sendStatus(500);
@@ -171,16 +172,18 @@ router.delete("/:id", async (req, res) => {
 router.post("/auth", async (req, res) => {
   const { username, password } = req.body;
 
-  // Create JWT
-  const token = JWT.sign(user.toJSON(), config.JWT_SECRET, { expiresIn: "7d" });
-
-  const { iat, exp } = JWT.decode(token);
-  // Respond with token
-  res.send({ iat, exp, token });
-
   try {
     // Authenticate User
     const user = await auth.authenicate(username, password);
+
+    // Create JWT
+    const token = JWT.sign(user.toJSON(), config.JWT_SECRET, {
+      expiresIn: "7d"
+    });
+
+    const { iat, exp } = JWT.decode(token);
+    // Respond with token
+    res.send({ iat, exp, token });
   } catch (error) {
     // User unauthorized
     console.log(error.message);
