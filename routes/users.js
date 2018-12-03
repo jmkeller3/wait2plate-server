@@ -34,7 +34,7 @@ router.get("/", async (req, res) => {
 // Access Public
 router.get("/:id", jwtAuth, async (req, res) => {
   try {
-    const user = await User.findById(req.params.id);
+    const user = await User.findById(req.user.id);
     await user.populate("Report");
 
     res.status(200).json(user.serialize());
