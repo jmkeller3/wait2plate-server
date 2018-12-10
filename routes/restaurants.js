@@ -11,17 +11,19 @@ router.get("/", async (req, res) => {
 
     const times = await Report.aggregate([
       {
-        $group: { _id: "$restaurant_id", avgTime: { $avg: "$reported_times" } }
+        $group: { _id: "$restaurant_id", avgTime: { $avg: "$time" } }
       }
     ]);
 
     const client_restaurants = restaurants.map(restaurant => {
       let wait_time = times.find(time => time._id === restaurant.id);
-      if (wait_time !== undefined)
+      if (wait_time !== undefined) {
+        console.log(wait_time);
         return {
           ...restaurant,
           reported_times: wait_time.avgTime
         };
+      }
       return {
         ...restaurant,
         reported_times: `No times reported.`
