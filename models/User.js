@@ -23,7 +23,7 @@ const UserSchema = new mongoose.Schema({
     required: true
   },
   points: {
-    type: String,
+    type: Number,
     default: 0
   },
   reports: [
