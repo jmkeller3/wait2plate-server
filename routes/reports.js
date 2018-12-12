@@ -127,7 +127,8 @@ router.put("/:id", jwtAuth, async (req, res) => {
 router.delete("/:id", jwtAuth, async (req, res) => {
   try {
     const report = await Report.findOneAndDelete({ _id: req.params.id });
-    res.sendStatus(204);
+    // User.update({ reports: req.params.id }, { $pull: req.params.id });
+    res.status(204).json(res);
   } catch (error) {
     res.sendStatus(404);
     res.json({ success: false });

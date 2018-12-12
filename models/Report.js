@@ -51,5 +51,10 @@ ReportSchema.pre("find", function(next) {
   next();
 });
 
+ReportSchema.pre("remove", function(next) {
+  // Remove the reference is the user who reported
+  this.model("User").remove({ report: this._id }, next);
+});
+
 const Report = mongoose.model("Report", ReportSchema);
 module.exports = Report;
