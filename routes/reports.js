@@ -126,12 +126,11 @@ router.put("/:id", jwtAuth, async (req, res) => {
 // ~Access Public
 router.delete("/:id", jwtAuth, async (req, res) => {
   try {
-    const report = await Report.findOneAndDelete({ _id: req.params.id });
+    const report = await Report.findOneAndRemove({ _id: req.params.id });
     // User.update({ reports: req.params.id }, { $pull: req.params.id });
     res.status(204).json(res);
   } catch (error) {
-    res.sendStatus(404);
-    res.json({ success: false });
+    res.send(404).json({ success: false });
   }
 });
 
