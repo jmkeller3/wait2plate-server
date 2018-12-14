@@ -131,7 +131,6 @@ router.delete("/:id", jwtAuth, async (req, res) => {
   if (user) {
     try {
       try {
-        // Remove from report from user by update
         await Report.findOneAndRemove({ _id: deleteReport });
         const reportIndex = user.reports.indexOf(deleteReport);
         if (reportIndex !== -1) {
