@@ -114,7 +114,7 @@ router.put("/:id", jwtAuth, async (req, res) => {
       { _id: req.params.id },
       req.body
     );
-    res.status(200).json(report.serialize());
+    res.status(202).json(report.serialize());
   } catch (error) {
     res.sendStatus(500);
     console.log(error.message);
@@ -125,12 +125,29 @@ router.put("/:id", jwtAuth, async (req, res) => {
 // ~Delete a report~
 // ~Access Public
 router.delete("/:id", jwtAuth, async (req, res) => {
-  try {
-    const report = await Report.findOneAndRemove({ _id: req.params.id });
-    // User.update({ reports: req.params.id }, { $pull: req.params.id });
-    res.status(204).json(res);
-  } catch (error) {
-    res.send(404).json({ success: false });
+  const deleteReport = req.params.id;
+  const user = await User.findById(req.user.id);
+
+  if (user) {
+    try {
+      try {
+        // Remove from report from user by update
+        await Report.findOneAndRemove({ _id: deleteReport });
+        const reportIndex = user.reports.indexOf(deleteReport);
+        if (reportIndex !== -1) {
+          user.reports.splice(reportIndex, 1);
+        }
+        console.log(deleteReport);
+        console.log(user);
+        user.save();
+        res.sendStatus(204);
+      } catch (error) {
+        console.error(error);
+        res.sendStatus(404);
+      }
+    } catch (err) {
+      console.log(err);
+    }
   }
 });
 
