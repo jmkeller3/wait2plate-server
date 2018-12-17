@@ -34,10 +34,17 @@ passport.use(jwtStrategy);
 const jwtAuth = passport.authenticate("jwt", { session: false });
 
 // Use Routes
-app.use("api/users", users);
-app.use("api/reports", reports);
-app.use("api/restaurants", restaurants);
-app.use("api/auth", auth);
+app.use("//api/users", users);
+app.use("//api/reports", reports);
+app.use("//api/restaurants", restaurants);
+app.use("//api/auth", auth);
+
+// Protected Endpoint
+app.get("/api/protected", jwtAuth, (req, res) => {
+  return res.json({
+    data: "snoopy"
+  });
+});
 
 let server;
 
