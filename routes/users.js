@@ -101,8 +101,12 @@ router.post("/", jsonParser, async (req, res) => {
       code: 422,
       reason: "ValidationError",
       message: tooSmallField
-        ? `Must be at least ${sizedFields[tooSmallField].min} characters long`
-        : `Must be at most ${sizedFields[tooLargeField].max} characters long`,
+        ? `Password must be at least ${
+            sizedFields[tooSmallField].min
+          } characters long`
+        : `Password must be at most ${
+            sizedFields[tooLargeField].max
+          } characters long`,
       location: tooSmallField || tooLargeField
     });
   }
@@ -147,7 +151,6 @@ router.post("/", jsonParser, async (req, res) => {
         res.status(201).json({
           authToken
         });
-        console.log(authToken);
       } catch (error) {
         console.log(error.message);
         res.sendStatus(500);

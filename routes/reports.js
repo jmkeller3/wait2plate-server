@@ -136,8 +136,6 @@ router.delete("/:id", jwtAuth, async (req, res) => {
         if (reportIndex !== -1) {
           user.reports.splice(reportIndex, 1);
         }
-        console.log(deleteReport);
-        console.log(user);
         user.save();
         res.sendStatus(204);
       } catch (error) {

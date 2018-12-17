@@ -18,7 +18,6 @@ router.get("/", async (req, res) => {
     const client_restaurants = restaurants.map(restaurant => {
       let wait_time = times.find(time => time._id === restaurant.id);
       if (wait_time !== undefined) {
-        console.log(wait_time);
         return {
           ...restaurant,
           reported_times: wait_time.avgTime
