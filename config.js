@@ -1,6 +1,7 @@
 (exports.PORT = process.env.PORT || 8000),
   (exports.URL = process.env.BASE_URL || "http://localhost:8000"),
-  (exports.CLIENT_ORIGIN = `http://localhost:3000`),
+  (exports.CLIENT_ORIGIN =
+    `https://guarded-thicket-83395.herokuapp.com` || `http://localhost:3000`),
   (exports.MONGODB_URI =
     "mongodb://admin:password123@ds151853.mlab.com:51853/wait2plate-api"),
   (exports.TEST_DATABASE_URI =
